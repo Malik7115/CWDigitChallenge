@@ -40,21 +40,6 @@ class MFCC1DCNN(nn.Module):
         logits = self.fc(x)
         return logits
     
-class MelCNN(nn.Module):
-    def __init__(self, n_mels=40, num_classes=10):
-        super().__init__()
-        self.conv1 = nn.Conv1d(n_mels, 32, kernel_size=3, padding=1)
-        self.relu = nn.ReLU()
-        self.pool = nn.AdaptiveAvgPool1d(1)  # global pooling
-        self.classifier = nn.Linear(32, num_classes)
-
-    def forward(self, x):
-        # x shape: (batch, n_mels, time)
-        x = self.conv1(x)
-        x = self.relu(x)
-        x = self.pool(x).squeeze(-1)
-        logits = self.classifier(x)
-        return logits
 
 if __name__ == '__main__':
 

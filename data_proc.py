@@ -15,8 +15,23 @@ class SpokenDigitDataset(Dataset):
         n_mfcc: number of MFCC coefficients
         extract_features: if True, return MFCC features; else return raw audio
         """
-        # Don't auto-decode audio
-        self.dataset = load_dataset("mteb/free-spoken-digit-dataset", split=split, cache_dir='./data/')
+        dataset = load_dataset("mteb/free-spoken-digit-dataset", split="train", cache_dir='./data/')
+
+        # Create train/val split
+        split_data = dataset.train_test_split(test_size=0.15, seed=42)
+
+        if split == 'train':
+            self.dataset = split_data["train"]
+        elif split == 'val':
+            self.dataset = split_data["test"]
+        elif split == 'test':
+            # If the dataset had a test split, you could load it separately
+            self.dataset = load_dataset("mteb/free-spoken-digit-dataset", split="test", cache_dir='./data/')
+
+        else:
+            raise ValueError(f"Unknown split: {split}")
+
+
         self.sr = sr
         self.augment = augment
         self.n_mfcc = n_mfcc
@@ -71,7 +86,7 @@ class SpokenDigitDataset(Dataset):
 
     def apply_augmentations(self, y):
         # Random additive noise
-        if random.random() < 0.30:
+        if random.random() < 0.75:
             noise_amp = 0.005 * np.random.uniform() * np.amax(y)
             y = y + noise_amp * np.random.normal(size=y.shape)
 
