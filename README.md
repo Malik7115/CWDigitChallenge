@@ -1,8 +1,5 @@
 # CWDigitChallenge
 
-
-
-
 ## Model Training Philosophy
 
 The idea is to train a model that is both of low latency and high efficacy. Probably for this particular task, a simple 1D CNN on audio waves could have done a good job but it would probably be of greater latency. Furhthermore, many of the speech based tasks are generally done on mel spectrograms or in some cases MFCCs. For simplicity I started off with MFCCs since they are more compressed than mel spectrograms.
@@ -71,10 +68,36 @@ run:<br>
 ```test.py --n_features {mfcc_features} --ckpt_path {path to ckpt}```
 if the parameters are not provided, they are set to best defaults. 
 
+## Live Mic Recording (Bonus)
+This project provides a lightweight voice activity detection (VAD) recorder that only captures speech segments and automatically trims silence. This is done to keep the recorded audio time close to the dataset distribution. The workflow is:<br>
+
+1. Recording starts as soon as speech is detected and stops when the user finishes speaking.
+2. Leading and trailing silence is trimmed, ensuring the output contains only speech.
+3. MFCC features are extracted from the audio with a configurable number of coefficients.
+4. Model is used for inference
+
+to test the live demo:
+
+run the cells in ```live_demo.ipynb```. The last cell in the notebook can be run repeatedly to repeat the recording and inference. During each recording a wav file ```output.wav``` is saved (and/or overwritten) so the user may inspect the recording
+
+**Note:** If inference fails for a certain recording, try again. Also The **WebRTC VAD** has an `aggressiveness` setting that controls how strictly it filters out non-speech:
+
+- `0` → Very permissive (accepts most sounds as speech, including noise).  
+- `1` → Low aggressiveness.  
+- `2` → Balanced (good trade-off for most use cases).  
+- `3` → Very aggressive (filters out more background noise, but may cut off softer speech).  
+
+You can set it when initializing the recorder:
+```python
+rec = VADRecorder(aggressiveness=2)  # default = 2
+```
+
 
 ## Future Considerations/Improvements
 
-The dataset mostly has audio lengths around 0.5 seconds. In a more complex scenario, taking the mean over time dimension in MFCCs would not be ideal. Instead, one should consider training a CNN on a melspec. Another thing to keep in mind is to set a minimum length to pad all audio waves smaller than this to the specified padding length.
+In a more complex scenario, taking the mean over time dimension in MFCCs would not be ideal. Instead, one should consider training a CNN on a melspec/mfcc over time dimension might be suitable as well. Another thing to keep in mind is to set a minimum length to pad all audio waves smaller than this to the specified padding length.<br>
+
+For more robustness some more augmentations can be added, filters, codec distortions etc.
 
 
 
@@ -82,3 +105,4 @@ The dataset mostly has audio lengths around 0.5 seconds. In a more complex scena
 Please keep in mind that the video submitted alongside is a very raw and form of early development. There are some things that might not seem correct but were done so to get the pipeline up and running. One very obvious example is that during the first training, just to check the pipeline the test set was used as both the val set and the test set.
 
 Usually for my day to day tasks I do pair programming with ChatGPT, there I can discuss, plan and validate ideas alongside getting code snippets. Also, my habit is to write code in small snippets first with GPT and test these snippets as they are integrated/implemented. 
+
