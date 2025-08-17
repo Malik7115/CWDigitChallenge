@@ -78,9 +78,14 @@ class SpokenDigitDataset(Dataset):
     def to_mfcc(self, y):
         # Compute MFCC
         mfcc = librosa.feature.mfcc(
-            y=y,
+            y = y,
             sr=self.sr,
-            n_mfcc=self.n_mfcc
+            n_mfcc=self.n_mfcc,
+            n_fft=256,
+            hop_length=80,
+            n_mels=40,   
+            fmin=20,
+            fmax=self.sr//2
         )
         return mfcc 
 
@@ -89,16 +94,6 @@ class SpokenDigitDataset(Dataset):
         if random.random() < 0.75:
             noise_amp = 0.005 * np.random.uniform() * np.amax(y)
             y = y + noise_amp * np.random.normal(size=y.shape)
-
-        # Random pitch shift
-        if random.random() < 0.30:
-            n_steps = np.random.uniform(-2, 2)  # semitones
-            y = librosa.effects.pitch_shift(y, sr=self.sr, n_steps=n_steps)
-
-        # Random time stretch
-        if random.random() < 0.30:
-            rate = np.random.uniform(0.8, 1.25)
-            y = librosa.effects.time_stretch(y, rate=rate)
 
         # Clip to valid range
         y = np.clip(y, -1.0, 1.0)

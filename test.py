@@ -19,10 +19,10 @@ warnings.filterwarnings("ignore")
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Model Testing")
 
-    parser.add_argument("--n_features", type=str, required=False, default=64,
-                        help="num features for MFCC, default is 64")
+    parser.add_argument("--n_features", type=str, required=False, default=15,
+                        help="num features for MFCC, default is 15")
     
-    parser.add_argument("--ckpt_path", type=str, required=False, default='logs/best-cnn-mfcc/checkpoints/epoch=9-step=2870.ckpt',
+    parser.add_argument("--ckpt_path", type=str, required=False, default='logs/best-cnn-mfcc/checkpoints/last.ckpt',
                     help="model ckpt path for inference, defaults to best CNN model")
     
     args = parser.parse_args()

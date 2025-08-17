@@ -8,15 +8,26 @@
 The idea is to train a model that is both of low latency and high efficacy. Probably for this particular task, a simple 1D CNN on audio waves could have done a good job but it would probably be of greater latency. Furhthermore, many of the speech based tasks are generally done on mel spectrograms or in some cases MFCCs. For simplicity I started off with MFCCs since they are more compressed than mel spectrograms.
 
 ### MFCC for spoken digit classifications
-MFCCs are extracted with default parameters in the librosa library with the num of features changed to 64. To take into account the  variation audio lengths, a mean is taken across the time domain for each MFCC. This not only makes each sample of the same shape, but also reduces the total number of modelling parameters. Based on these inputs, two models were experimented on as discussed below 
+MFCCs are extracted with the following parameters:<br>
+```
+mfcc = librosa.feature.mfcc(
+    y = y,
+    n_mfcc=self.n_mfcc, #specified by user
+    n_fft=256,
+    hop_length=80,
+    n_mels=40,   
+    fmin=20,
+    fmax=self.sr//2
+)
+```
+To take into account the  variation audio lengths, a mean is taken across the time domain for each MFCC. This not only makes each sample of the same shape, but also reduces the total number of modelling parameters. Based on these inputs, two models were experimented on as discussed below 
 
 #### Augmentations
 
 To make the model robust to noise and improve efficacy, the following augmentations were added randomly to samples:
 
 1. Gaussian noise addition
-2. pitch shifting 
-3. time shifting 
+
 
 #### Logistic Classifier
 A simple logistic classifier was trained on the input samples, although it was giving a decent efficacy, the model was underfitting.

@@ -12,9 +12,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import argparse
 
-import warnings
-warnings.filterwarnings("ignore")
-
 pl.seed_everything(42, workers=True)
 
 class LightningAudioClassifier(pl.LightningModule):
@@ -107,11 +104,11 @@ def main():
     parser = argparse.ArgumentParser(description="Train MFCC CNN classifier on spoken digit dataset")
 
     # Features / dataset
-    parser.add_argument("--n_features", type=int, default=64, help="Number of MFCC features")
+    parser.add_argument("--n_features", type=int, default=15, help="Number of MFCC features")
     parser.add_argument("--batch_size", type=int, default=8, help="Training batch size")
     parser.add_argument("--val_batch_size", type=int, default=4, help="Validation batch size")
     parser.add_argument("--test_batch_size", type=int, default=4, help="Test batch size")
-    parser.add_argument("--num_workers", type=int, default=4, help="Number of workers for DataLoader")
+    parser.add_argument("--num_workers", type=int, default=2, help="Number of workers for DataLoader")
 
     # Model
     parser.add_argument("--hidden_channels", type=int, default=32, help="Hidden channels in CNN")
@@ -122,7 +119,6 @@ def main():
     parser.add_argument("--max_epochs", type=int, default=10, help="Number of training epochs")
     parser.add_argument("--accelerator", type=str, default="gpu", help="Accelerator: 'gpu' or 'cpu'")
     parser.add_argument("--devices", type=int, default=1, help="Number of devices (GPUs/CPUs)")
-    parser.add_argument("--checkpoint_dir", type=str, default="checkpoints", help="Directory to save checkpoints")
 
     args = parser.parse_args()
 
@@ -144,7 +140,6 @@ def main():
 
     # Checkpoints
     checkpoint_callback = ModelCheckpoint(
-        dirpath=args.checkpoint_dir,
         filename="last",
         save_last=True,
         save_top_k=0
